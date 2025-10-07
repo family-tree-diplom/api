@@ -1,0 +1,11 @@
+{
+    "name": "opencck/core",
+    "authors": [
+        {
+            "name": "Rekryt",
+            "email": "rekrytkw@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}

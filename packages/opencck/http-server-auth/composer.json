@@ -1,0 +1,11 @@
+{
+    "name": "opencck/http-server-auth",
+    "authors": [
+        {
+            "name": "Rekryt",
+            "email": "rekrytkw@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
