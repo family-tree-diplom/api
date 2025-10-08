@@ -22,8 +22,8 @@ use function React\Async\await;
  */
 final class UsersControllerTest extends AsyncTest {
     private const CRED = [
-        'username' => 'testUser',
-        'password' => 'jQpAYKEaspx8qRsn2i4J',
+        'username' => 'admin',
+        'password' => 'admin',
     ];
 
     private bool $applicationStarted = false;
