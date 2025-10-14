@@ -19,8 +19,7 @@ final class People implements EntityInterface {
         #[Column(type: 'string(255)')] public string $surname,
         #[Column(type: 'string(255)')] public string $birth_day,
         #[Column(type: 'string(255)')] public string $death,
-        #[Column(type: 'boolean')] public bool $gender,
-
+        #[Column(type: 'enum(man, woman, unknown)')] public string $gender = 'unknown',
     ) {
     }
 

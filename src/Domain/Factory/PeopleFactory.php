@@ -19,7 +19,7 @@ final class PeopleFactory implements FactoryInterface {
             surname: $item->get('surname', '', Input\Filter::STR),
             birth_day: $item->get('birth_day', '', Input\Filter::STR),
             death: $item->get('death', '', Input\Filter::STR),
-            gender: $item->get('gender', null, Input\Filter::BOOLEAN),
+            gender: $item->get('gender', 'unknown', Input\Filter::STR),
 
         );
     }
