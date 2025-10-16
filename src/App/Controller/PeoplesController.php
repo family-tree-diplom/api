@@ -9,9 +9,11 @@ use Doctrine\DBAL\Exception;
 use OpenCCK\App\Helper\Helper;
 use OpenCCK\Domain\Entity\User;
 use OpenCCK\Domain\Repository\PeopleRepository;
+use OpenCCK\Domain\Repository\RelationRepository;
 use OpenCCK\Domain\Repository\UserRepository;
 use OpenCCK\Infrastructure\API\Input;
 use OpenCCK\Infrastructure\Mapper\MapperInterface;
+use OpenCCK\Infrastructure\Model\PeopleModel;
 use Throwable;
 
 class PeoplesController extends AbstractController {
@@ -28,9 +30,22 @@ class PeoplesController extends AbstractController {
      * @throws Exception
      * @throws Throwable
      */
-    public function default(): array
-    {
+    public function default(): array {
         $repository = new PeopleRepository();
-        return $repository->read([], null, 0, []);
+        $relationRepository = new RelationRepository();
+        $model = new PeopleModel();
+        $peoples = $repository->read([], null, 0, []);
+        $relations = $relationRepository->read([], null, 0, []);
+        foreach ($peoples as $people) {
+            foreach($relations as $relation){
+                if($people->id === $relation->peoples_id_from){
+                    $people->relations[] = [
+                        'type'=>$relation->type,
+                        'id'=>$relation->peoples_id_to
+                    ];
+                }
+            }
+        }
+        return $peoples;
     }
 }
