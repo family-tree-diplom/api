@@ -16,6 +16,7 @@ final class TreeFactory implements FactoryInterface {
         return new Tree(
             id: $item->get('id', 0, Input\Filter::INT),
             title: $item->get('title', '', Input\Filter::STR),
+            slug: $item->get('slug', '', Input\Filter::STR),
             users_id: $item->get('users_id', null, Input\Filter::INT)
         );
     }

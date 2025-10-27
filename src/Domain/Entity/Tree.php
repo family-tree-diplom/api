@@ -16,8 +16,11 @@ final class Tree implements EntityInterface {
     public function __construct(
         #[Column(type: 'primary')] public int $id,
         #[Column(type: 'string(255)')] public string $title,
-        #[BelongsTo(target: User::class, innerKey: 'users_id', cascade: true, nullable: true)] public ?int $users_id=null,
-
+        #[Column(type: 'string(255)')] public string $slug,
+        #[
+            BelongsTo(target: User::class, innerKey: 'users_id', cascade: true, nullable: true)
+        ]
+        public ?int $users_id = null
     ) {
     }
 
