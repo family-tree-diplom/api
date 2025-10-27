@@ -30,18 +30,22 @@ class PeoplesController extends AbstractController {
      * @throws Exception
      * @throws Throwable
      */
-    public function default(): array {
-        $repository = new PeopleRepository();
+    public function default(Input $input) {
         $relationRepository = new RelationRepository();
         $model = new PeopleModel();
-        $peoples = $repository->read([], null, 0, []);
+        $peoples = $model->getPeoplesByTree($input->get('trees_id', 0, Input\Filter::INT));
         $relations = $relationRepository->read([], null, 0, []);
+        $peoples = array_map(static function (array $p) {
+            $p['id'] = (int) $p['id'];
+            return (object) $p;
+        }, $peoples);
         foreach ($peoples as $people) {
-            foreach($relations as $relation){
-                if($people->id === $relation->peoples_id_from){
+            foreach ($relations as $relation) {
+//                return [$people->id, $relation->peoples_id_from];
+                if ($people->id === $relation->peoples_id_from) {
                     $people->relations[] = [
-                        'type'=>$relation->type,
-                        'id'=>$relation->peoples_id_to
+                        'type' => $relation->type,
+                        'id' => $relation->peoples_id_to,
                     ];
                 }
             }
