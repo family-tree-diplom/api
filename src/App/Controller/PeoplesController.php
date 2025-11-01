@@ -47,7 +47,7 @@ class PeoplesController extends AbstractController {
         }, $peoples);
         foreach ($peoples as $people) {
             foreach ($relations as $relation) {
-//                return [$people->id, $relation->peoples_id_from];
+                //                return [$people->id, $relation->peoples_id_from];
                 if ($people->id === $relation->peoples_id_from) {
                     $people->relations[] = [
                         'type' => $relation->type,
@@ -58,9 +58,16 @@ class PeoplesController extends AbstractController {
         }
         return $peoples;
     }
-    public function save(Input $input){
-        $peoples = $input->get("peoples", [], Input\Filter::ARRAY );
+
+    /**
+     * @throws Throwable
+     * @throws Exception
+     */
+    public function save(Input $input): bool {
+        $peoples = $input->get('peoples', [], Input\Filter::ARRAY);
         $treeId = $input->get('treeId', 1, Input\Filter::INT);
+
+        $peoples = json_decode(json_encode($peoples), true); // гарантовано переводимо у масив
 
         $repository = new PeopleRepository();
         $repositoryTree = new PeopleToTreeRepository();
@@ -68,17 +75,17 @@ class PeoplesController extends AbstractController {
         $factory = new PeopleFactory();
         $treeFactory = new PeopleToTreeFactory();
 
-        $results = $repository->save($factory->create($peoples));
-        $treeRelations = [];
-        return $results;
-        foreach ($results as $result){
-            $treeRelations[] = [
-                'peoples_id'=>$result->id,
-                'trees_id'=>$treeId
-            ];
-        }
+        foreach ($peoples as $people) {
+            $person = $factory->create($people);
+            $id = $repository->save($person, true);
 
-        $treeResults = $repositoryTree->save($treeFactory->create($treeRelations));
+            $tree = $treeFactory->create([
+                'peoples_id' => $id,
+                'trees_id' => $treeId,
+            ]);
+
+            $repositoryTree->save($tree, true);
+        }
 
         return true;
     }
