@@ -5,11 +5,17 @@ namespace OpenCCK\App\Controller;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Session\Session;
 
+use Cycle\ORM\Service\Implementation\EntityFactory;
 use Doctrine\DBAL\Exception;
+use Dom\Entity;
 use OpenCCK\App\Helper\Helper;
 use OpenCCK\Domain\Entity\User;
+use OpenCCK\Domain\Factory\PeopleFactory;
+use OpenCCK\Domain\Factory\PeopleToTreeFactory;
 use OpenCCK\Domain\Repository\PeopleRepository;
+use OpenCCK\Domain\Repository\PeopleToTreeRepository;
 use OpenCCK\Domain\Repository\RelationRepository;
+use OpenCCK\Domain\Repository\TreeRepository;
 use OpenCCK\Domain\Repository\UserRepository;
 use OpenCCK\Infrastructure\API\Input;
 use OpenCCK\Infrastructure\Mapper\MapperInterface;
@@ -51,5 +57,29 @@ class PeoplesController extends AbstractController {
             }
         }
         return $peoples;
+    }
+    public function save(Input $input){
+        $peoples = $input->get("peoples", [], Input\Filter::ARRAY );
+        $treeId = $input->get('treeId', 1, Input\Filter::INT);
+
+        $repository = new PeopleRepository();
+        $repositoryTree = new PeopleToTreeRepository();
+
+        $factory = new PeopleFactory();
+        $treeFactory = new PeopleToTreeFactory();
+
+        $results = $repository->save($factory->create($peoples));
+        $treeRelations = [];
+        return $results;
+        foreach ($results as $result){
+            $treeRelations[] = [
+                'peoples_id'=>$result->id,
+                'trees_id'=>$treeId
+            ];
+        }
+
+        $treeResults = $repositoryTree->save($treeFactory->create($treeRelations));
+
+        return true;
     }
 }
