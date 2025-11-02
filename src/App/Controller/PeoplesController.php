@@ -89,4 +89,27 @@ class PeoplesController extends AbstractController {
 
         return true;
     }
+
+    public function deletePerson(Input $input) {
+        $ids = $input->get('selectedIds', [], Input\Filter::ARRAY);
+        $treeId = $input->get('treeId', 1, Input\Filter::INT);
+
+        $repository = new PeopleRepository();
+        $repositoryTree = new PeopleToTreeRepository();
+
+        foreach ($ids as $id) {
+            $trees = $repositoryTree->read(['peoples_id'=>$id]);
+            if (count($trees)>1){
+                $tree = $repositoryTree->get([
+                    'trees_id'=>$treeId,
+                    'peoples_id'=>$id,
+                ]);
+                $repositoryTree->delete($tree);
+            }elseif (count($trees)<=1){
+                $people = $repository->get(['id'=>$id]);
+                $repository->delete($people);
+            }
+        }
+        return true;
+    }
 }

@@ -69,7 +69,7 @@ abstract class AdminController extends AbstractController {
      * @throws \Doctrine\DBAL\Exception|Throwable
      */
     public function read(Input $params): array {
-        $limit = $params->get('itemsPerPage', 10, Input\Filter::INT);
+        $limit = $params->get('itemsPerPage', 100, Input\Filter::INT);
         $page = $params->get('page', 1, Input\Filter::INT);
         $offset = ($page - 1) * $limit;
         $order = $this->helper->generateSortOrderMap($params, 'sortBy');
