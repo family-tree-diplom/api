@@ -42,39 +42,62 @@ class RelationsController extends AbstractController {
         $factory = new RelationFactory();
 
         $peoples = $input->get('peoples', [], Input\Filter::ARRAY);
-        if (count($peoples) < 2 || empty($peoples) || count($peoples) >3) {
+        if (count($peoples) < 2 || empty($peoples) || count($peoples) > 3) {
             return false;
         } elseif (count($peoples) === 2) {
             $relation = $factory->create([
-                'type'=>$input->get('type', 'unknown', Input\Filter::STR),
-                'peoples_id_from'=>$peoples[0],
-                'peoples_id_to'=>$peoples[1],
-                'tree_id'=>$input->get('tree_id', 0,Input\Filter::INT),
+                'type' => $input->get('type', 'unknown', Input\Filter::STR),
+                'peoples_id_from' => $peoples[0],
+                'peoples_id_to' => $peoples[1],
+                'tree_id' => $input->get('tree_id', 0, Input\Filter::INT),
             ]);
             $repository->save($relation);
-        } elseif(count($peoples) === 3) {
+        } elseif (count($peoples) === 3) {
+            if (
+                empty(
+                    $repository->read([
+                        'peoples_id_from' => $peoples[0],
+                        'peoples_id_to' => $peoples[1],
+                    ])
+                )
+            ) {
+                $relation = $factory->create([
+                    'type' => 'marriage',
+                    'peoples_id_from' => $peoples[0],
+                    'peoples_id_to' => $peoples[1],
+                    'tree_id' => $input->get('tree_id', 0, Input\Filter::INT),
+                ]);
+                $repository->save($relation);
+            }
             $relation = $factory->create([
-                'type'=>'marriage',
-                'peoples_id_from'=>$peoples[0],
-                'peoples_id_to'=>$peoples[1],
-                'tree_id'=>$input->get('tree_id', 0,Input\Filter::INT),
+                'type' => $input->get('type', 'unknown', Input\Filter::STR),
+                'peoples_id_from' => $peoples[0],
+                'peoples_id_to' => $peoples[2],
+                'tree_id' => $input->get('tree_id', 0, Input\Filter::INT),
             ]);
             $repository->save($relation);
             $relation = $factory->create([
-                'type'=>$input->get('type', 'unknown', Input\Filter::STR),
-                'peoples_id_from'=>$peoples[0],
-                'peoples_id_to'=>$peoples[2],
-                'tree_id'=>$input->get('tree_id', 0,Input\Filter::INT),
-            ]);
-            $repository->save($relation);
-            $relation = $factory->create([
-                'type'=>$input->get('type', 'unknown', Input\Filter::STR),
-                'peoples_id_from'=>$peoples[1],
-                'peoples_id_to'=>$peoples[2],
-                'tree_id'=>$input->get('tree_id', 0,Input\Filter::INT),
+                'type' => $input->get('type', 'unknown', Input\Filter::STR),
+                'peoples_id_from' => $peoples[1],
+                'peoples_id_to' => $peoples[2],
+                'tree_id' => $input->get('tree_id', 0, Input\Filter::INT),
             ]);
             $repository->save($relation);
         }
+    }
 
+    public function removeRelations(Input $input) {
+        $repository = new RelationRepository();
+        $ids = $input->get('peoples', [], Input\Filter::ARRAY);
+        $relations = [];
+        foreach ($ids as $id) {
+            $relations[] = $repository->read(['peoples_id_from' => $id]);
+            $relations[] = $repository->read(['peoples_id_to' => $id]);
+        }
+        $relations = array_merge($relations[0], $relations[1]);
+        foreach ($relations as $relation) {
+            $repository->delete($relation);
+        }
+        return true;
     }
 }
