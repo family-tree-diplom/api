@@ -112,4 +112,11 @@ class PeoplesController extends AbstractController {
         }
         return true;
     }
+
+    public function edit(Input $input) {
+        $people = $input->get('people', [], Input\Filter::ARRAY);
+        $repository = new PeopleRepository();
+        $repository->update($people);
+        return true;
+    }
 }
