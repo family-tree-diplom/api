@@ -98,15 +98,15 @@ class PeoplesController extends AbstractController {
         $repositoryTree = new PeopleToTreeRepository();
 
         foreach ($ids as $id) {
-            $trees = $repositoryTree->read(['peoples_id'=>$id]);
-            if (count($trees)>1){
+            $trees = $repositoryTree->read(['peoples_id' => $id]);
+            if (count($trees) > 1) {
                 $tree = $repositoryTree->get([
-                    'trees_id'=>$treeId,
-                    'peoples_id'=>$id,
+                    'trees_id' => $treeId,
+                    'peoples_id' => $id,
                 ]);
                 $repositoryTree->delete($tree);
-            }elseif (count($trees)<=1){
-                $people = $repository->get(['id'=>$id]);
+            } elseif (count($trees) <= 1) {
+                $people = $repository->get(['id' => $id]);
                 $repository->delete($people);
             }
         }
@@ -116,7 +116,6 @@ class PeoplesController extends AbstractController {
     public function edit(Input $input) {
         $people = $input->get('people', [], Input\Filter::ARRAY);
         $repository = new PeopleRepository();
-        $repository->update($people);
-        return true;
+        return $repository->update((new PeopleFactory())->create($people));
     }
 }
